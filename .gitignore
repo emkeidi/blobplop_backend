@@ -72,3 +72,5 @@ config.json
 
 # Serverless directories
 .serverless
+
+*.zip

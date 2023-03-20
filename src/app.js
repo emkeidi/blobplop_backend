@@ -28,6 +28,11 @@ app.get('/', (req, res) => {
 	});
 });
 
+app.use('/api/v1', api);
+
+app.use(notFound);
+app.use(errorHandler);
+
 // connect to Discord API. make intents known.
 const client = new Client({
 	intents: [
@@ -47,11 +52,6 @@ const configuration = new Configuration({
 });
 
 const openai = new OpenAIApi(configuration);
-
-app.use('/api/v1', api);
-
-app.use(notFound);
-app.use(errorHandler);
 
 // check for messages
 client.on('messageCreate', async (message) => {
