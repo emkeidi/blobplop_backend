@@ -5,7 +5,6 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const express = require('express');
-const { MARVIN_TOKEN, openAIKey, openAIOrg } = require('../config.json');
 
 require('dotenv').config();
 
@@ -47,8 +46,8 @@ const client = new Client({
 
 // set up OpenAI API
 const configuration = new Configuration({
-	organization: openAIOrg,
-	apiKey: openAIKey,
+	organization: process.env.OPENAI_ORG,
+	apiKey: process.env.OPENAI_KEY,
 });
 
 const openai = new OpenAIApi(configuration);
@@ -112,6 +111,6 @@ for (const file of eventFiles) {
 	}
 }
 
-client.login(MARVIN_TOKEN);
+client.login(process.env.MARVIN_TOKEN);
 
 module.exports = app;
