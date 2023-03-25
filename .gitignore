@@ -76,3 +76,4 @@ config.json
 *.zip
 
 target
+.DS_store
