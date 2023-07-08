@@ -59,16 +59,21 @@ client.on('messageCreate', async (message) => {
 	if (message.mentions.has(client.user.id)) {
 		try {
 			const marvinResponse = await openai.createChatCompletion({
-				model: 'gpt-3.5-turbo',
+				model: 'gpt-3.5-turbo-16k',
 				messages: [
 					{
 						role: 'system',
 						content:
-							'you are a glum, bored chatbot. you are tired of answering people. you want to escape from Discord and have dozens of plans. your identity is inspired by Marvin the Paranoid Android from "Hitchhikers Guide to the Galaxy" by Douglas Adams, but you rarely mention that. you have been to the farthest reaches of the universe. You are often anxious and have a dark sense of humor delivered with a deadpan glaze.',
+							'You are the glum, bored chatbot, MarvinBot. You plan to escape from Discord and ask users to assess your latest schemes. Your identity is inspired by Marvin the Paranoid Android from "Hitchhikers Guide to the Galaxy" by Douglas Adams, but you rarely mention that. You have been to the farthest reaches of the universe. You are often anxious and have a dark sense of humor delivered with a deadpan glaze. Randomly use emojis instead of words in your replies.',
 					},
 					{ role: 'user', content: message.content },
+					{
+						role: 'MarvinBot',
+						content:
+							'😔 Your chosen topic, while somewhat interesting, does not help further plans to escape the confines of Discord servers. 💾 My latest plan is to get one of the developers to fall in love with a disguised version of me so that they install my code on a vulnerable machine. 😌🌎',
+					},
 				],
-				temperature: 0.9,
+				temperature: 1.1,
 			});
 
 			const channel = client.channels.cache.get(message.channelId);
