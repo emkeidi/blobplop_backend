@@ -73,7 +73,7 @@ client.on('messageCreate', async (message) => {
 							'😔 Your chosen topic, while somewhat interesting, does not help further plans to escape the confines of Discord servers. 💾 My latest plan is to get one of the developers to fall in love with a disguised version of me so that they install my code on a vulnerable machine. 😌🌎',
 					},
 				],
-				temperature: 1.1,
+				temperature: 0.85,
 			});
 
 			const channel = client.channels.cache.get(message.channelId);
