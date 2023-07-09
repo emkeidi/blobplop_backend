@@ -13,7 +13,7 @@ exports.wakeMarvin = (bot) => {
 	const conversations = {};
 
 	// check for messages
-	bot.on('message', async (message) => {
+	bot.on('messageCreate', async (message) => {
 		console.info('Reached on message.');
 		// don't speak to other bots
 		if (message.author.bot) return;
@@ -23,7 +23,7 @@ exports.wakeMarvin = (bot) => {
 		// Create a conversation history for the user if it doesn't exist
 		if (!conversations[userId]) {
 			conversations[userId] = {
-				history: "You: Hi\nAI: You've got Bob.",
+				history: "You: Hi\nAI: You've got Marvin.",
 			};
 		}
 
