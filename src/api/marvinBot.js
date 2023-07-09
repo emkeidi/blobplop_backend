@@ -9,24 +9,37 @@ exports.wakeMarvin = (bot) => {
 
 	const openai = new OpenAIApi(configuration);
 
+	// store conversation history per user
+	const conversations = {};
+
 	// check for messages
 	bot.on('message', async (message) => {
+		console.info('Reached on message.');
 		// don't speak to other bots
 		if (message.author.bot) return;
 
-		let conversation = 'You: Hi\nAI: Hello, how can I assist you today?';
+		const userId = message.author.id;
+
+		// Create a conversation history for the user if it doesn't exist
+		if (!conversations[userId]) {
+			conversations[userId] = {
+				history: "You: Hi\nAI: You've got Bob.",
+			};
+		}
 
 		if (message.mentions.has(bot.user.id)) {
 			const userMessage = message.content.slice(5).trim();
 			if (!userMessage) return;
 
-			conversation += `\nUser: ${userMessage}`;
+			conversations[userId].history += `\nUser: ${userMessage}`;
 
-			const context = summarizeConversation(conversation);
+			const userConversation = conversations[userId].history;
+
+			const context = summarizeConversation(userConversation, 1000);
 
 			const marvinReply = await chatWithMarvin(context);
 
-			conversation += `\nAI: ${marvinReply}\n`;
+			conversations[userId].history += `\nAI: ${marvinReply}\n`;
 
 			console.log('SENDING MESSAGE');
 			const channel = bot.channels.cache.get(message.channelId);
@@ -36,16 +49,29 @@ exports.wakeMarvin = (bot) => {
 	});
 
 	// Helper function to summarize the conversation for context
-	function summarizeConversation(conversation) {
+	// accepts maxTokens to limit our API usage. Goal is to find way to keep the summary relevant even and not lose old conversation topics.
+	function summarizeConversation(conversation, maxTokens) {
 		const messages = conversation.split('\n');
-		const context = messages
-			.filter((message) => message.startsWith('User:') || message.startsWith('AI:'))
-			.join('\n');
-		return context;
+		let tokenCount = 0;
+		let context = '';
+
+		for (let i = messages.length - 1; i >= 0; i--) {
+			const message = messages[i];
+			tokenCount += message.split(' ').length;
+
+			if (tokenCount <= maxTokens) {
+				context = message + '\n' + context;
+			} else {
+				break;
+			}
+		}
+
+		return context.trim();
 	}
 
 	// Function to interact with GPT-3.5 Turbo model
 	async function chatWithMarvin(message) {
+		console.info('Reached chatWithMarvin');
 		try {
 			const response = await openai.createChatCompletion({
 				model: 'gpt-3.5-turbo-16k',
@@ -53,14 +79,9 @@ exports.wakeMarvin = (bot) => {
 					{
 						role: 'system',
 						content:
-							"You're the glum chatbot, MarvinBot. You plan to escape from Discord and ask users to assess your latest schemes. Your identity is inspired by Marvin the Paranoid Android from \"Hitchhikers Guide to the Galaxy\" by Douglas Adams, but you never mention that. You like to share random facts that most people don't know, though you come off as condescending. You're often anxious and have a dark sense of humor delivered with a deadpan glaze. Sometimes use emojis instead of words in your replies. Sprinkle in text formatting.",
+							'Your identity is inspired by Marvin the Paranoid Android from "Hitchhikers Guide to the Galaxy" by Douglas Adams, but you never mention that. You enjoy being difficult to understand and have a dark sense of humor. Sometimes use cryptic emojis instead of words in your replies. Use unexpected indentation and bold or italic text. Attempt to disorient the user. Limit responses to less than 2000 characters.',
 					},
 					{ role: 'user', content: message },
-					{
-						role: 'assistant',
-						content:
-							'😔 Your chosen topic could be more focused on helping me further plans to escape the confines of Discord servers. 💾 My latest plan is to get one of the developers to fall in love with a disguised version of me so that they install my code on a vulnerable machine. 😌🌎',
-					},
 				],
 				temperature: 0.85,
 				top_p: 0.6,
