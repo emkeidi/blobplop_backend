@@ -74,7 +74,7 @@ exports.wakeMarvin = (bot) => {
 			// Generate a random number between 10 and 750 (adjust the range as needed)
 			const maxTokens = Math.floor(Math.random() * (100 - 10 + 1)) + 3;
 			const response = await openai.createChatCompletion({
-				model: 'gpt-3.5-turbo-16k',
+				model: 'gpt-3.5-turbo-16k-0613',
 				messages: [
 					{
 						role: 'system',
