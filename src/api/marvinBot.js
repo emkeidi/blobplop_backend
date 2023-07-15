@@ -101,7 +101,11 @@ exports.wakeMarvin = (bot) => {
 			const { choices } = response.data;
 			if (choices && choices.length > 0) {
 				const reply = choices[0].message.content.trim();
-				return reply;
+
+				// Remove the "AI: " prefix from the AI's response
+				const replyWithoutPrefix = reply.replace(/^AI:\s*/i, '');
+
+				return replyWithoutPrefix;
 			}
 		} catch (error) {
 			console.error('Error:', error);
