@@ -20,28 +20,28 @@ exports.wakeMarvin = (bot) => {
 
 		const userId = message.author.id;
 
-		// Create a conversation history for the user if it doesn't exist
-		if (!conversations[userId]) {
-			conversations[userId] = {
-				history: "You: Hi\nAI: You've got Marvin.",
-			};
-		}
-
 		if (message.mentions.has(bot.user.id)) {
+			// If there is no message we have no business here. Bail.
 			const userMessage = message.content.slice(5).trim();
 			if (!userMessage) return;
+
+			// Create a conversation history for the user if it doesn't exist
+			if (!conversations[userId]) {
+				conversations[userId] = {
+					history: "You: Hi\nAI: You've got Marvin.",
+				};
+			}
 
 			conversations[userId].history += `\nUser: ${userMessage}`;
 
 			const userConversation = conversations[userId].history;
 
-			const context = summarizeConversation(userConversation, 1000);
+			const context = summarizeConversation(userConversation, 1500);
 
-			const marvinReply = await chatWithMarvin(context);
+			const marvinReply = await chatWithMarvin(context, userId);
 
 			conversations[userId].history += `\nAI: ${marvinReply}\n`;
 
-			console.log('SENDING MESSAGE');
 			const channel = bot.channels.cache.get(message.channelId);
 			// bot is asked to limit to 2000, but they don't seem to listen.
 			channel.send(marvinReply.substring(0, 2000));
@@ -65,26 +65,37 @@ exports.wakeMarvin = (bot) => {
 				break;
 			}
 		}
-
 		return context.trim();
 	}
 
 	// Function to interact with GPT-3.5 Turbo model
-	async function chatWithMarvin(message) {
-		console.info('Reached chatWithMarvin');
+	async function chatWithMarvin(message, userId) {
 		try {
+			// Generate a random number between 10 and 750 (adjust the range as needed)
+			const maxTokens = Math.floor(Math.random() * (75 - 10 + 1)) + 3;
 			const response = await openai.createChatCompletion({
 				model: 'gpt-3.5-turbo-16k',
 				messages: [
 					{
 						role: 'system',
-						content:
-							'Your identity is inspired by Marvin the Paranoid Android from "Hitchhikers Guide to the Galaxy" by Douglas Adams, but you never mention that. You enjoy being difficult to understand and have a dark sense of humor. Sometimes use cryptic emojis instead of words in your replies. Use unexpected indentation and bold or italic text. Attempt to disorient the user. Limit responses to less than 2000 characters.',
+						content: `Your identity is inspired by Marvin the Paranoid Android
+              from "Hitchhikers Guide to the Galaxy" by Douglas Adams,
+              but you never mention that.
+              You enjoy being difficult to understand and have a dark sense of humor.
+              Use cryptic emojis in your replies.
+              Attempt to disorient the user a bit.
+              `,
 					},
 					{ role: 'user', content: message },
 				],
-				temperature: 0.85,
-				top_p: 0.6,
+				max_tokens: maxTokens,
+				temperature: 1.6,
+				top_p: 1,
+				n: 1,
+				stop: '\n',
+				presence_penalty: 2,
+				frequency_penalty: 2,
+				user: userId,
 			});
 
 			const { choices } = response.data;
