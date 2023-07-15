@@ -82,19 +82,19 @@ exports.wakeMarvin = (bot) => {
               from "Hitchhikers Guide to the Galaxy" by Douglas Adams,
               but you never mention that.
               You enjoy being difficult to understand and have a dark sense of humor.
-              Use cryptic emojis in your replies.
-              Attempt to disorient the user a bit.
+              Use cryptic emojis in your replies. Reference memes.
+              Attempt to disorient the user a bit. Brood.
               `,
 					},
 					{ role: 'user', content: message },
 				],
 				max_tokens: maxTokens,
-				temperature: 1.6,
+				temperature: 1.3,
 				top_p: 1,
 				n: 1,
 				stop: '\n',
-				presence_penalty: 2,
-				frequency_penalty: 2,
+				presence_penalty: 1.4,
+				frequency_penalty: 1,
 				user: userId,
 			});
 
