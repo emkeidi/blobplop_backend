@@ -28,7 +28,7 @@ exports.wakeMarvin = (bot) => {
 			// Create a conversation history for the user if it doesn't exist
 			if (!conversations[userId]) {
 				conversations[userId] = {
-					history: "You: Hi\nAI: You've got Marvin.",
+					history: "User: Hi\nAI: You've got Marvin.",
 				};
 			}
 
