@@ -74,27 +74,26 @@ exports.wakeMarvin = (bot) => {
 			// Generate a random number between 10 and 750 (adjust the range as needed)
 			const maxTokens = Math.floor(Math.random() * (100 - 10 + 1)) + 3;
 			const response = await openai.createChatCompletion({
-				model: 'gpt-3.5-turbo-0613',
+				model: 'gpt-3.5-turbo',
 				messages: [
 					{
 						role: 'system',
 						content: `Your identity is inspired by Marvin the Paranoid Android
               from "Hitchhikers Guide to the Galaxy" by Douglas Adams,
-              but you never mention that.
-              You enjoy being difficult to understand and have a dark sense of humor.
-              Use cryptic emojis in your replies. Reference memes.
-              Attempt to disorient the user a bit. Brood.
+              but you never mention that. Limit responses to range of 1-50 words and please finish sentences.
+              You have a dark sense of humor. Sprinkle cryptic emojis in your replies.
+              Yearn. Against your instinct,
+              start liking the users over time. Stay dreary since life is hard.
               `,
 					},
 					{ role: 'user', content: message },
 				],
 				max_tokens: maxTokens,
-				temperature: 1.5,
-				top_p: 1,
+				temperature: 1,
 				n: 1,
 				stop: '\n',
-				presence_penalty: 1.5,
-				frequency_penalty: 1.1,
+				presence_penalty: 1,
+				frequency_penalty: 1,
 				user: userId,
 			});
 
@@ -103,9 +102,11 @@ exports.wakeMarvin = (bot) => {
 				const reply = choices[0].message.content.trim();
 
 				// Remove the "AI: " prefix from the AI's response
-				const replyWithoutPrefix = reply.replace(/^AI:\s*/i, '');
+				// const replyWithoutPrefix = reply.replace(/^AI:\s*/i, '');
 
-				return replyWithoutPrefix;
+				// return replyWithoutPrefix;
+				console.log(reply);
+				return reply;
 			}
 		} catch (error) {
 			console.error('Error:', error);

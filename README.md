@@ -11,4 +11,3 @@ Starter code thanks to [create-express-api](https://github.com/w3cj/create-expre
 - [ ] TypeScript Time?
 - [ ] Refactor app.js, it's getting busy
 - [ ] Host game stats outside of the code to schedule automatic updates
-- [ ] Rate limit openai-using code (budget is set, at least)
