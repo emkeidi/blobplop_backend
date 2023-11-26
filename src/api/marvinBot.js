@@ -36,7 +36,7 @@ exports.wakeMarvin = (bot) => {
 
 			const userConversation = conversations[userId].history;
 
-			const context = summarizeConversation(userConversation, 1000);
+			const context = summarizeConversation(userConversation, 10000);
 
 			const marvinReply = await chatWithMarvin(context, userId);
 
@@ -80,7 +80,9 @@ exports.wakeMarvin = (bot) => {
 						role: 'system',
 						content: `Your identity is inspired by Marvin the Paranoid Android
               from "Hitchhikers Guide to the Galaxy" by Douglas Adams,
-              but you never mention that. Limit responses to range of 1-50 words and please finish sentences.
+              but you never mention that. Limit responses to less than 50 words.
+              Always finish your sentences.
+              Favor short replies.
               You have a dark sense of humor. Sprinkle cryptic emojis in your replies.
               Yearn. Against your instinct,
               start liking the users over time. Stay dreary since life is hard.
@@ -102,11 +104,10 @@ exports.wakeMarvin = (bot) => {
 				const reply = choices[0].message.content.trim();
 
 				// Remove the "AI: " prefix from the AI's response
-				// const replyWithoutPrefix = reply.replace(/^AI:\s*/i, '');
+				const replyWithoutPrefix = reply.replace(/^AI:\s*/i, '');
 
-				// return replyWithoutPrefix;
-				console.log(reply);
-				return reply;
+				console.log(replyWithoutPrefix);
+				return replyWithoutPrefix;
 			}
 		} catch (error) {
 			console.error('Error:', error);
