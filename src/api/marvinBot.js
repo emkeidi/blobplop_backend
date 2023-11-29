@@ -14,7 +14,6 @@ exports.wakeMarvin = (bot) => {
 
 	// check for messages
 	bot.on('messageCreate', async (message) => {
-		console.info('Reached on message.');
 		// don't speak to other bots
 		if (message.author.bot) return;
 

@@ -152,7 +152,7 @@ module.exports = {
 			.setColor('DarkGold')
 			.setTitle(`${playerResponseJson.data.player.username}'s stats`)
 			.setAuthor({
-				name: 'MCStatChecker',
+				name: 'Minecraft Stat Bot',
 				iconURL:
 					'https://static.wikia.nocookie.net/minecraft_gamepedia/images/a/ab/Diamond_JE3_BE3.png/revision/latest?cb=20200325185152',
 			})
