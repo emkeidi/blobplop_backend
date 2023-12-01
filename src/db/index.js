@@ -5,25 +5,20 @@ const prisma = new PrismaClient();
 // ######### STAT CRUD ############
 // create, read, update, and delete your stats here
 
-async function addStatsFromFile(file) {
-	const fileName = file.name;
-
-	// Extract UUID from the filename
-	const match = fileName.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
-	const playerUUID = match ? match[1] : null;
-
-	if (!playerUUID) {
-		throw new Error('Player UUID not found in the filename');
-	}
-
+async function addStatsFromFile(file, playerUUID) {
 	// Parse the JSON data
-	const newData = JSON.parse(file);
+	// const newData = JSON.parse(file);
 
 	// Store the JSON data in the database along with the player's UUID
-	const createdStat = await prisma.mc_stat.create({
-		data: {
+	// using 'upsert' to update if the playerUUID already exists, and create if not
+	const createdStat = await prisma.mc_stat.upsert({
+		where: { user_id: playerUUID },
+		update: {
+			stats: file,
+		},
+		create: {
 			user_id: playerUUID,
-			stats: newData,
+			stats: file,
 		},
 	});
 

@@ -1,5 +1,5 @@
 const { REST, Routes } = require('discord.js');
-const { clientId, MARVIN_TOKEN } = require('../config.json');
+const { clientId, guildId, MARVIN_TOKEN } = require('../config.json');
 const fs = require('node:fs');
 
 const commands = [];
@@ -21,7 +21,7 @@ const rest = new REST({ version: '10' }).setToken(MARVIN_TOKEN);
 		console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
 		// The put method is used to fully refresh all commands globally
-		const data = await rest.put(Routes.applicationCommands(clientId), {
+		const data = await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
 			body: commands,
 		});
 
