@@ -12,5 +12,6 @@ model mc_stat {
   id         BigInt   @id(map: "mc_stats_pkey") @unique(map: "mc_stats_id_key") @default(autoincrement())
   created_at DateTime @default(now()) @db.Timestamptz(6)
   user_id    String   @unique(map: "mc_stats_user_id_key") @db.Uuid
+  user_name  String
   stats      Json?
 }

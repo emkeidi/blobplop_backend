@@ -8,6 +8,7 @@ const app = express();
 const { initializeDiscordBot } = require('./api/initializeDiscordBot');
 const { wakeMarvin } = require('./api/marvinBot');
 
+// load environment variables
 require('dotenv').config();
 
 // enable if you're behind a reverse proxy (AWS ELB, Nginx)

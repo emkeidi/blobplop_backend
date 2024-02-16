@@ -1,13 +1,13 @@
-const { Configuration, OpenAIApi } = require('openai');
+const { OpenAI } = require('openai');
 
+// Function to wake Marvin up
 exports.wakeMarvin = (bot) => {
-	// set up OpenAI API
-	const configuration = new Configuration({
+	// Initialize OpenAI API
+
+	const openai = new OpenAI({
 		organization: process.env.OPENAI_ORG,
 		apiKey: process.env.OPENAI_KEY,
 	});
-
-	const openai = new OpenAIApi(configuration);
 
 	// store conversation history per user
 	const conversations = {};
@@ -19,6 +19,7 @@ exports.wakeMarvin = (bot) => {
 
 		const userId = message.author.id;
 
+		// If the bot is mentioned, start a conversation
 		if (message.mentions.has(bot.user.id)) {
 			// If there is no message we have no business here. Bail.
 			const userMessage = message.content.slice(5).trim();
@@ -31,17 +32,21 @@ exports.wakeMarvin = (bot) => {
 				};
 			}
 
+			// Add the user's message to the conversation history
 			conversations[userId].history += `\nUser: ${userMessage}`;
-
+			// Get the user's conversation history
 			const userConversation = conversations[userId].history;
-
 			const context = summarizeConversation(userConversation, 10000);
 
+			// Get a reply from Marvin
 			const marvinReply = await chatWithMarvin(context, userId);
 
+			// Add Marvin's reply to the conversation history
 			conversations[userId].history += `\nAI: ${marvinReply}\n`;
 
+			// Send Marvin's reply to the channel
 			const channel = bot.channels.cache.get(message.channelId);
+
 			// bot is asked to limit to 2000, but they don't seem to listen.
 			channel.send(marvinReply.substring(0, 2000));
 		}
@@ -72,8 +77,8 @@ exports.wakeMarvin = (bot) => {
 		try {
 			// Generate a random number between 10 and 750 (adjust the range as needed)
 			const maxTokens = Math.floor(Math.random() * (100 - 10 + 1)) + 3;
-			const response = await openai.createChatCompletion({
-				model: 'gpt-3.5-turbo',
+			const completion = await openai.chat.completions.create({
+				model: 'gpt-3.5-turbo-0125',
 				messages: [
 					{
 						role: 'system',
@@ -98,16 +103,12 @@ exports.wakeMarvin = (bot) => {
 				user: userId,
 			});
 
-			const { choices } = response.data;
-			if (choices && choices.length > 0) {
-				const reply = choices[0].message.content.trim();
+			const reply = completion.choices[0].message.content.trim();
 
-				// Remove the "AI: " prefix from the AI's response
-				const replyWithoutPrefix = reply.replace(/^AI:\s*/i, '');
+			// Remove the "AI: " prefix from the AI's response
+			const replyWithoutPrefix = reply.replace(/^AI:\s*/i, '');
 
-				console.log(replyWithoutPrefix);
-				return replyWithoutPrefix;
-			}
+			return replyWithoutPrefix;
 		} catch (error) {
 			console.error('Error:', error);
 		}
